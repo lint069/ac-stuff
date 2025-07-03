@@ -87,7 +87,6 @@ function script.update(dt)
         for i = 1, #orbis do
             if dist > math.sqrt((cpos.x - orbis[i].x) ^ 2 + (cpos.z - orbis[i].z) ^ 2) then
                 dist = math.sqrt((cpos.x - orbis[i].x) ^ 2 + (cpos.z - orbis[i].z) ^ 2)
-                target = i
             end
         end
     end
