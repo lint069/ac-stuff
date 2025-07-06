@@ -11,13 +11,13 @@ local settings = ac.storage {
 
 local mirror = {
     texture = "./assets/mirror.dds",
-    lights = "./assets/lights.png",
-    lights_orange = "./assets/lights_orange.png",
+    lights = "./assets/lights.dds",
+    lights_orange = "./assets/lights_orange.dds",
     size = vec2(520, 320)
 }
 
 local arrow = {
-    texture = "./assets/arrow.png",
+    texture = "./assets/arrow.dds",
     size = vec2(80, 80)
 }
 
