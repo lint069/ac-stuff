@@ -76,26 +76,28 @@ function script.windowMain()
     ui.pathArcTo(arcCenter, 19, 3.25, 6.18, 35)
     ui.pathStroke(rgbm(0.50, 0.60, 0.19, 0.9), false, 4)
 
-    if not online then return end
-
     local nearest = ac.getCar.ordered(1)
     if nearest == nil then return end
+    if not online then return end
 
     local AI = nearest.isHidingLabels
     local inRange = nearest.distanceToCamera < 30
+    local isorb = settings.orbis and orbisstate
 
-    if settings.orbis and orbisstate and sim.frame % 30 < 15 then
+    if settings.orbis and orbisstate then
         ui.setCursor(vec2(-10, -60))
         ui.image(mirror.lights_orange, mirror.size, rgbm(1, 1, 1, 1))
     end
 
-    if settings.lights and inRange and AI and not settings.NOAI and not orbisstate then
-        ui.setCursor(vec2(-10, -60))
-        ui.image(mirror.lights, mirror.size)
+    if inRange and not isorb and settings.lights then
+        if not AI or (AI and not settings.NOAI) then
+            ui.setCursor(vec2(-10, -60))
+            ui.image(mirror.lights, mirror.size)
+        end
     end
 
-    if settings.ArrowEnabled and not orbisstate and inRange then
-        if AI and not settings.NOAI then
+    if inRange and not isorb and settings.ArrowEnabled then
+        if not AI or (AI and not settings.NOAI) then
             local look_vec3 = ac.getCar.ordered(0).look
             local diff_vec3 = nearest.position - ac.getCar.ordered(0).position
 
@@ -115,8 +117,6 @@ function script.windowMain()
             ui.endRotation(angle, vec2(0, 0))
         end
     end
-
-    ac.debug("isHidingLabels:", nearest.isHidingLabels)
 end
 
 function script.settings()
