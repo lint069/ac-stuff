@@ -18,9 +18,10 @@ local mirror = {
 
 local arrow = {
     texture = "./assets/arrow.dds",
-    size = vec2(80, 80)
+    size = vec2(75, 75)
 }
 
+local APP_VERSION = "1.0.0"
 local track = ac.getTrackID()
 local sim = ac.getSim()
 local orbisstate = false
@@ -64,7 +65,7 @@ function script.windowMain()
     ui.endTonemapping(1, 1.8 - (sim.lightSuggestion * 0.8), true)
 
     ui.setCursor(vec2(-10, -60))
-    ui.image(mirror.texture, mirror.size, rgbm(1, 1, 1, 0.88))
+    ui.image(mirror.texture, mirror.size, rgbm(1, 1, 1, 0.85))
 
     local arcCenter = vec2(250, 185)
     ui.pathArcTo(arcCenter, 19, 3.25, 6.18, 35)
@@ -85,8 +86,10 @@ function script.windowMain()
     local isorb = settings.orbis and orbisstate
 
     if settings.orbis and orbisstate then
-        ui.setCursor(vec2(-10, -60))
-        ui.image(mirror.lights_orange, mirror.size, rgbm(1, 1, 1, 1))
+        if sim.frame % 40 > 20 then
+            ui.setCursor(vec2(-10, -60))
+            ui.image(mirror.lights_orange, mirror.size, rgbm(1, 1, 1, 1))
+        end
     end
 
     if inRange and not isorb and settings.lights then
@@ -112,8 +115,8 @@ function script.windowMain()
             local opacity = settings.ArrowFade and math.clamp(math.lerp(1, 0, (nearest.distanceToCamera - 15) / 15), 0, 1) or 1
 
             ui.beginRotation()
-            ui.setCursor(vec2(210, 143))
-            ui.image(arrow.texture, arrow.size, rgbm(1, 1, 1, opacity))
+            ui.setCursor(vec2(212.5, 145))
+            ui.image(arrow.texture, arrow.size, rgbm(1, 1, 1, opacity - 0.1))
             ui.endRotation(angle, vec2(0, 0))
         end
     end
@@ -121,62 +124,64 @@ end
 
 function script.settings()
     local accentColor = rgbm(0.8, 0.06, 0.1, 1)
-    local whitespace = 35
-    local settingsString = "Disable indicator"
+    local whitespace = 27
+    local plural = "Disable indicator"
 
     if ac.getPatchVersionCode() >= 3425 then
         accentColor = ac.getUI().accentColor
     end
 
-    ui.configureStyle(accentColor, false, true, 0.9)
+    ui.drawSimpleLine(vec2(0, 23), vec2(300, 23), accentColor)
 
-    ui.setCursor(vec2(10, 35))
+    ui.setCursor(vec2(10, 28))
+    ui.text("App version:")
+    ui.sameLine(0, 5)
+    ui.textColored(APP_VERSION, rgbm(0, 1, 0.2, 1))
+
+    ui.setCursor(vec2(10, 50))
     if ui.checkbox("Center app", settings.CenterApp) then
         settings.CenterApp = not settings.CenterApp
     end
 
+    ui.drawSimpleLine(vec2(0, 80), vec2(300, 80), rgbm(0.4, 0.4, 0.4, 0.8))
+
     if not online then
-        ui.setCursor(vec2(10, 70))
+        ui.setCursor(vec2(10, 85))
         ui.text("Advanced options don't work in single player.")
-        ui.drawSimpleLine(vec2(0, 64), vec2(300, 64), rgbm(0.4, 0.4, 0.4, 0.8))
         return
     end
-
-    ui.drawSimpleLine(vec2(0, 23), vec2(300, 23), accentColor)
 
     if string.match(track, "shuto_revival_project") then
         whitespace = 0
 
-        ui.setCursor(vec2(10, 70 - whitespace))
-        if ui.checkbox("Enable orbis detection", settings.orbis) then
+        ui.setCursor(vec2(10, 88 - whitespace))
+        if ui.checkbox("Orbis detection", settings.orbis) then
             settings.orbis = not settings.orbis
         end
-
-        ui.drawSimpleLine(vec2(0, 64), vec2(300, 64), rgbm(0.4, 0.4, 0.4, 0.8))
     end
 
-    ui.setCursor(vec2(10, 124 - whitespace))
+    if settings.ArrowEnabled and settings.lights then
+        plural = "Disable indicators"
+    end
+
+    ui.setCursor(vec2(10, 115 - whitespace))
+    if ui.checkbox(plural .. " with non players", settings.NOAI) then
+        settings.NOAI = not settings.NOAI
+    end
+
+    ui.setCursor(vec2(10, 140 - whitespace))
     if ui.checkbox("Light indicator", settings.lights) then
         settings.lights = not settings.lights
     end
 
-    ui.setCursor(vec2(10, 151 - whitespace))
+    ui.setCursor(vec2(10, 165 - whitespace))
     if ui.checkbox("Enable proximity arrow (buggy)", settings.ArrowEnabled) then
         settings.ArrowEnabled = not settings.ArrowEnabled
     end
 
-    ui.setCursor(vec2(35, 180 - whitespace))
+    ui.setCursor(vec2(35, 192.5 - whitespace))
     if settings.ArrowEnabled and ui.checkbox("Enable arrow fading", settings.ArrowFade) then
         settings.ArrowFade = not settings.ArrowFade
-    end
-
-    if settings.ArrowEnabled and settings.lights then
-        settingsString = "Disable indicators"
-    end
-
-    ui.setCursor(vec2(10, 97 - whitespace))
-    if ui.checkbox(settingsString .. " with non players", settings.NOAI) then
-        settings.NOAI = not settings.NOAI
     end
 end
 
