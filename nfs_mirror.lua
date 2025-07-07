@@ -64,7 +64,7 @@ function script.windowMain()
     ui.endTonemapping(1, 1.8 - (sim.lightSuggestion * 0.8), true)
 
     ui.setCursor(vec2(-10, -60))
-    ui.image(mirror.texture, mirror.size, rgbm(1, 1, 1, 0.95))
+    ui.image(mirror.texture, mirror.size, rgbm(1, 1, 1, 0.88))
 
     local arcCenter = vec2(250, 185)
     ui.pathArcTo(arcCenter, 19, 3.25, 6.18, 35)
@@ -136,7 +136,7 @@ function script.settings()
     end
 
     if not online then
-        ui.setCursor(vec2(10, 60))
+        ui.setCursor(vec2(10, 70))
         ui.text("Advanced options don't work in single player.")
         ui.drawSimpleLine(vec2(0, 64), vec2(300, 64), rgbm(0.4, 0.4, 0.4, 0.8))
         return
