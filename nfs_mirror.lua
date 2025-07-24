@@ -1,3 +1,5 @@
+---@diagnostic disable: need-check-nil
+
 require("orbis")
 
 local settings = ac.storage {
@@ -21,7 +23,7 @@ local arrow = {
     size = vec2(75, 75)
 }
 
-local APP_VERSION = "1.0.0"
+local APP_VERSION = ac.INIConfig.load('apps/lua/nfs_mirror/manifest.ini', ac.INIFormat.Extended):get('ABOUT', 'VERSION', 0.00)
 local track = ac.getTrackID()
 local sim = ac.getSim()
 local orbisstate = false
@@ -31,7 +33,7 @@ local appWindow = ac.accessAppWindow('IMGUI_LUA_NFS mirror_main')
 local function CenterApp()
     if not appWindow:valid() then return end
 
-    local windowWidth = ac.getSim().windowWidth
+    local windowWidth = sim.windowWidth
     local center = (windowWidth - appWindow:size().x) / 2
 
     if appWindow:position().x ~= center and not ui.isMouseDragging(ui.MouseButton.Left, 0) then
@@ -136,7 +138,7 @@ function script.settings()
     ui.setCursor(vec2(10, 28))
     ui.text("App version:")
     ui.sameLine(0, 5)
-    ui.textColored(APP_VERSION, rgbm(0, 1, 0.2, 1))
+    ui.textColored(tostring(APP_VERSION), rgbm(0.1, 1, 0.2, 1))
 
     ui.setCursor(vec2(10, 50))
     if ui.checkbox("Center app", settings.CenterApp) then
@@ -147,7 +149,7 @@ function script.settings()
 
     if not online then
         ui.setCursor(vec2(10, 85))
-        ui.text("Advanced options don't work in single player.")
+        ui.textColored("Advanced options only work in multiplayer.", rgbm(1, 1, 1, 0.3))
         return
     end
 
